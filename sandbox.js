@@ -23,37 +23,52 @@ MongoClient.connect(uri, {useNewUrlParser: true}, (error, client) => {
     throw error;
   }
   database = client.db(DATABASE_NAME);
-  database.collection(COLLECTION_NAME).drop(function(err, delOK){
+  collection = database.collection(COLLECTION_NAME);
+  collection.drop(function(err, delOK){
   if(err) throw err;
   if(delOK) console.log("Collection deleted");
-  })
-  console.log("Connected to `" + DATABASE_NAME + "` !");
-  sandbox(DENZEL_IMDB_ID, database, client);
-  
-  app.get('/movies', function(req, res){
-    database.collection(COLLECTION_NAME).find().toArray(function(err, result){
-      if(err) return res.status(500).send(error);
-      //res.send(result);
-      res.render('index.ejs', {movies : "title"});
-    });/*
-    res.render('index.ejs', {movies : "title"});*/
-    client.db;
   });
-
-
+  console.log("Connected to `" + DATABASE_NAME + "` !");
+  sandbox(DENZEL_IMDB_ID, collection, client);
 });
 
+app.get('/movies', function(req, res){
+  collection.find().toArray(function(err, result){
+    if(err) return res.status(500).send(err);
+    res.send(result);
+  });
+})
 
-async function sandbox (actor, database, client) {
+.get('/movies/search', function(req, res){
+  var query = {'metascore':{$gte: parseInt(req.query.metascore)}};
+  collection.find(query).sort({metascore: -1}).limit(parseInt(req.query.limit)).toArray(function(err,result){
+    if(err) return res.sendStatus(500).send(err);
+    res.send(result);
+  });
+})
+
+.post('/movies/:id', function(req, res){
+  collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
+    if(err) return res.sendStatus(500).send(err);
+    res.send(result.result);
+  });
+})
+
+.get('/movies/:id', function(req, res){
+  collection.find({'id': req.params.id}).toArray(function(err, result){
+    if(err) return res.sendStatus(500).send(err);
+    res.send(result);
+  });
+})
+
+async function sandbox (actor, collection, client) {
   try {
     console.log(`📽️  fetching filmography of ${actor}...`);
     const movies = await imdb(actor);
-    const awesome = movies.filter(movie => movie.metascore >= 77);
 
-    database.collection(COLLECTION_NAME).insertMany(movies, function(err, doc){
+    collection.insertMany(movies, function(err, doc){
       if(err) throw err;
       else console.log("Movies imported");
-      client.close();
     });
   } catch (e) {
     console.error(e);
@@ -61,4 +76,4 @@ async function sandbox (actor, database, client) {
   }
 }
 
-app.listen(8080);
+app.listen(9292);
