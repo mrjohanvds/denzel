@@ -9,6 +9,23 @@
                 margin : 0;
                 padding: 0;
             }
+
+            h1{
+                text-align: center;
+                font-family: 'Amiko', sans-serif;
+                color: #FFF;
+                background-color: #424558;
+                padding: 15px; 
+                border-top: 5px solid #e44d26;
+            }
+
+            #main{
+                display:grid;
+                grid-template-columns: auto auto;
+            }
+
+            /* #region Movie CSS */
+
             ul {
                 list-style-type: none;
             }
@@ -19,17 +36,19 @@
                 margin: 20px 20px;                
             }
 
-            .movie > div{
-                padding:10px 20px;
+            .movie > div > div{
                 display: grid;
                 grid-template-columns: 130px auto;
             }
-            
+            .movie > div{
+                
+                padding:10px 20px;
+            }
             .movie > div:hover{
+                padding: 10px 15px 10px 20px;
                 background-color: RGBa(228,77,38,0.15);
                 border-right: 5px solid #e44d26;
             }
-    
             .title {
                 font-weight: bold;
                 font-size: 150%;
@@ -38,7 +57,62 @@
             .movie-infos{
                 text-align: left;
             }
+
+            .moreinfos{
+                padding: 2px;
+                text-decoration: none;
+                background-color: RGB(230, 100, 40);
+                color: #222538;
+                float: right;
+                font-family: 'Amiko', sans-serif;
+            }
+
+            .moreinfos:hover{
+                background-color: RGB(210, 77, 60);
+                color: #EEE;
+            }
+
+            /* #endregion /*
+
+            /* #region Form CSS */
             
+            .review-form{
+                max-height: 0;
+                overflow: hidden;
+            }    
+            
+            .movie > div:hover .review-form{
+                max-height:initial;
+            }
+
+            .submit{
+                display: inline-block;
+                text-decoration: none;
+                background-color: RGB(230, 100, 40);
+                color: #222538;
+                font-family: 'Amiko', sans-serif;
+                border: none;
+                text-align: right;
+                padding: 5px;
+            }
+
+            textarea, input[type=date]{
+                padding:3px;
+                border:1px solid #e44d26;
+                border-radius:5px;
+                box-shadow:1px 1px 2px #C0C0C0 inset;
+
+            }
+
+            .submit:hover{
+                background-color: RGB(210, 77, 60);
+                color: #EEE;
+            }
+
+            /* #endregion */
+
+            /* #region Nav bar CSS */
+
             nav > ul > li{
                 float: left;
                 position: relative;
@@ -57,15 +131,10 @@
                 list-style-type: none;
             }
     
-            .submenu{
-                display: none;
-                background-color: RGB(230, 100, 40);
-            }
-    
             nav{
                 width: 100%;
                 background-color: #424558;
-                font-family: 'Amiko', 'sans-serif';
+                font-family: 'Amiko', sans-serif;
             }
     
             nav > ul::after{
@@ -84,17 +153,75 @@
                 color: #FFF;
             }
 
-            nav li:hover .submenu{
-                display: inline-block;
+            /* #region Slider CSS */
+
+            #menu-filter form{
+                width: 200px;
+                display: none;
+                padding: 20px;
+                background-color: RGB(90, 70, 81);
+                color: #CCC
+            }
+
+            #menu-filter:hover form{
+                display: block;
                 position: absolute;
-                top: 100%;
-                left: 0px;
-                z-index: 100000;
+            }
+
+            .slidecontainer{
+                width: 100%;
+            }    
+
+            .slider{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 25px;
+                background-color: #d3d3d3;
+                outline: none;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+            }
+
+            .slider:hover{
+                opacity: 1;
+            }
+            
+            .slider::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: RGB(230, 100, 40);
+                cursor: pointer;
+            }
+
+            .slider::-moz-range-thumb{
+                width: 25px;
+                height: 25px;
+                background: RGB(230, 100, 40);
+                cursor: pointer;
+            }
+
+            /* #endregion */
+
+            /* #endregion */
+
+            /* #region Submenu CSS */
+
+            .submenu{
+                font-family: 'Amiko', sans-serif;
             }
 
             .submenu li{
-                border-bottom: 1px solid #CCC;
-                            
+                background-color: RGB(230, 100, 40);
+                border-bottom: 1px solid #CCC;    
+            }
+
+            .submenu a{
+                display: inline-block;
+                text-decoration: none; 
             }
 
             .submenu li:hover{
@@ -112,47 +239,96 @@
                 color: #EEE;
                 font-weight: bold;
             }
+
+            /* #endregion */
     </style>
 </head>
 
 <body>
-    <h1>The Denzel filmography</h1>
-
+    <h1>The Denzel's filmography</h1>
     <nav>
         <ul>
             <li id="menu-random"> <a href="/movies">Random</a></li>
-            <li id="menu-film"><a href="/movies/all">Movies</a>
-                <ul class="submenu">
-                    <% movies.forEach( movie => { %>
-                        <li><a href="/movies/<%=movie.id%>"><%=movie.title%></a></li>
-                    <% }); %>
-                </ul>
+            <li id="menu-film"><a href="/movies/all">Movies</a></li>
+            <li id="menu-filter"><a>Filter</a>
+                <form action="/movies/search" method="get">
+                    Metascore : <span id="demo-metascore">0</span>
+                    <div class="slidecontainer">
+                        <input type="range" name="metascore" min="0" max="100" value="0" class="slider" id="myRange-metascore">
+                    </div>
+                    Element to display : <span id="demo-limit">5</span>
+                    <div class="slidecontainer">
+                        <input type="range" name="limit" min="1" max="100" value="5" class="slider" id="myRange-limit">   
+                    </div>
+                    <br>
+                    <input type="submit" value="Submit" class="submit"> 
+                </form>
             </li>
         </ul>
     </nav>
 
+    <div id="main">
+        <ul class="submenu">
+            <% movies.forEach( movie => { %>
+                <li><a href="/movies/<%=movie.id%>"><%=movie.title%></a></li>
+            <% }); %>
+        </ul>
+        <ul>
+            <% movies.forEach( movie => { %>
+                <li class="movie">
+                    <div>
+                        <div>
+                            <img class="poster" src="<%= movie.poster %>" height="150px" />
+                            <div class="movie-infos">
+                                <p class="title"><%= movie.title %></p>
+                                <p><%= movie.synopsis %></p>
+                                <p>Metascore ⭐ : <%= movie.metascore %></p>
+                                <p>Year of release : <%= movie.year %></p>
+                                <p>Rating : <%= movie.rating %> (<%= movie.votes %> votes)</p>
+                                <a href="<%= movie.link %>" class="moreinfos">More infos</a>
+                                <p><% if(movie.review){%>
+                                    Review : <%=movie.date%> : <%=movie.review%>
+                                    <%}%>
+                                </p>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="review-form">
+                            <form action="/movies/<%=movie.id%>" method="post">
+                                <div>
+                                    <label for="date">Date :</label>
+                                    <input type="date" id="date" name="date" required value="2019-01-01"/>
+                                </div>
+                                <br>
+                                <div>
+                                    <label for="review">Your review :</label>
+                                    <textarea name="review" id="review" cols="40" rows="5" required>Enter your review here...</textarea>
+                                </div>
+                                <div><input type="submit" class="submit" value="Submit"/></div>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
     
-    <ul>
-        <% movies.forEach( movie => { %>
-        <li class="movie">
-            <div>
-                <img class="poster" src="<%= movie.poster %>" height="150px" />
-                <div class="movie-infos">
-                    <p class="title"><%= movie.title %></p>
-                    <p><%= movie.synopsis %></p>
-                    <p>Metascore ⭐ : <%= movie.metascore %></p>
-                    <p>Year of release : <%= movie.year %></p>
-                    <p>Rating : <%= movie.rating %> (<%= movie.votes %> votes)</p>
-                    <a href="<%= movie.link %>">More infos</a>
-                </div>
-            </div>
-        </li>
-        <% }); %>
-    </ul>
 
 
     <script>
+        var slider = document.getElementById("myRange-metascore");
+        var slider2 = document.getElementById("myRange-limit");
 
+        var output = document.getElementById("demo-metascore");
+        var output2 = document.getElementById("demo-limit");
+
+        slider.oninput = function(){
+            output.innerHTML = this.value;
+        }
+
+        slider2.oninput = function(){
+            output2.innerHTML = this.value;
+        }
     </script>
 </body>
 

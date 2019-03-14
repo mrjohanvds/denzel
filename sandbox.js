@@ -1,4 +1,3 @@
-/* eslint-disable no-console, no-process-exit */
 const imdb = require('./src/imdb');
 const Express = require("express");
 const BodyParser = require("body-parser");
@@ -49,8 +48,16 @@ app.get('/movies/all', function(req, res){
 })
 
 .get('/movies/search', function(req, res){
-  var query = {'metascore':{$gte: parseInt(req.query.metascore)}};
-  collection.find(query).sort({metascore: -1}).limit(parseInt(req.query.limit)).toArray(function(err,result){
+  if(req.query.metascore)
+    var meta = req.query.metascore;
+  else
+    var meta = 0;
+  if(req.query.limit)
+    var lim = req.query.limit;
+  else
+    var lim = 5;
+  var query = {'metascore':{$gte: parseInt(meta)}};
+  collection.find(query).sort({metascore: -1}).limit(parseInt(lim)).toArray(function(err,result){
     if(err) return res.sendStatus(500).send(err);
     //res.send(result);
     res.render('index.ejs', {movies: result});
@@ -60,8 +67,7 @@ app.get('/movies/all', function(req, res){
 .post('/movies/:id', function(req, res){
   collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
     if(err) return res.sendStatus(500).send(err);
-    res.send(result.result);
-    //res.render('index.ejs', {movies: result});
+    res.redirect('/movies/'+req.params.id);
   });
 })
 
