@@ -79,6 +79,10 @@ app.get('/movies/all', function(req, res){
   });
 })
 
+.use(function(req, res, next){
+  res.redirect('/movies/all');
+})
+
 async function sandbox (actor, collection, client) {
   try {
     console.log(`📽️  fetching filmography of ${actor}...`);
