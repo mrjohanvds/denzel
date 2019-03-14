@@ -1,22 +1,159 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Denzel's movies</title>
-        <style>
-        </style>
-    </head>
-    <body>
-        <h1>The Denzel filmography</h1>
 
-        <ul>
-            <% /*result.forEach(function(movie, index){*/ %>
-                <li><p><%= movies %></p></li>
-            <% /*})*/; %>
-        </ul>
+<head>
+    <title>Denzel's movies</title>
+    <style>
+            @import url('https://fonts.googleapis.com/css?family=Amiko');
+            *{
+                margin : 0;
+                padding: 0;
+            }
+            ul {
+                list-style-type: none;
+            }
+    
+            .movie {
+                background-color: #424558;
+                color: #FFF; 
+                margin: 20px 20px;                
+            }
 
-
-        <script>
+            .movie > div{
+                padding:10px 20px;
+                display: grid;
+                grid-template-columns: 130px auto;
+            }
             
-        </script>
-    </body>
+            .movie > div:hover{
+                background-color: RGBa(228,77,38,0.15);
+                border-right: 5px solid #e44d26;
+            }
+    
+            .title {
+                font-weight: bold;
+                font-size: 150%;
+                font-family: 'Amiko', sans-serif;
+            }
+            .movie-infos{
+                text-align: left;
+            }
+            
+            nav > ul > li{
+                float: left;
+                position: relative;
+            }
+
+            nav > ul > li:hover{
+                border-top: 5px solid #e44d26;
+                background-color: RGBa(228,77,38,0.15);
+            }
+            
+            nav > ul > li:hover a{
+                padding: 15px 30px 20px 30px;
+            }
+
+            nav li{
+                list-style-type: none;
+            }
+    
+            .submenu{
+                display: none;
+                background-color: RGB(230, 100, 40);
+            }
+    
+            nav{
+                width: 100%;
+                background-color: #424558;
+                font-family: 'Amiko', 'sans-serif';
+            }
+    
+            nav > ul::after{
+                content: "";
+                display: block;
+                clear: both;
+            }
+    
+            nav a{
+                display: inline-block;
+                text-decoration: none;
+            }
+            
+            nav > ul > li > a{
+                padding: 20px 30px;
+                color: #FFF;
+            }
+
+            nav li:hover .submenu{
+                display: inline-block;
+                position: absolute;
+                top: 100%;
+                left: 0px;
+                z-index: 100000;
+            }
+
+            .submenu li{
+                border-bottom: 1px solid #CCC;
+                            
+            }
+
+            .submenu li:hover{
+                background-color: RGB(210, 77, 60);
+            }
+
+            .submenu li a{
+                padding: 15px 30px;
+                font-size: 13px;
+                color: #222538;
+                width: 270px;
+            }
+
+            .submenu li:hover a{
+                color: #EEE;
+                font-weight: bold;
+            }
+    </style>
+</head>
+
+<body>
+    <h1>The Denzel filmography</h1>
+
+    <nav>
+        <ul>
+            <li id="menu-random"> <a href="/movies">Random</a></li>
+            <li id="menu-film"><a href="/movies/all">Movies</a>
+                <ul class="submenu">
+                    <% movies.forEach( movie => { %>
+                        <li><a href="/movies/<%=movie.id%>"><%=movie.title%></a></li>
+                    <% }); %>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    
+    <ul>
+        <% movies.forEach( movie => { %>
+        <li class="movie">
+            <div>
+                <img class="poster" src="<%= movie.poster %>" height="150px" />
+                <div class="movie-infos">
+                    <p class="title"><%= movie.title %></p>
+                    <p><%= movie.synopsis %></p>
+                    <p>Metascore ⭐ : <%= movie.metascore %></p>
+                    <p>Year of release : <%= movie.year %></p>
+                    <p>Rating : <%= movie.rating %> (<%= movie.votes %> votes)</p>
+                    <a href="<%= movie.link %>">More infos</a>
+                </div>
+            </div>
+        </li>
+        <% }); %>
+    </ul>
+
+
+    <script>
+
+    </script>
+</body>
+
 </html>

@@ -32,10 +32,19 @@ MongoClient.connect(uri, {useNewUrlParser: true}, (error, client) => {
   sandbox(DENZEL_IMDB_ID, collection, client);
 });
 
-app.get('/movies', function(req, res){
+app.get('/movies/all', function(req, res){
   collection.find().toArray(function(err, result){
     if(err) return res.status(500).send(err);
-    res.send(result);
+    //res.send(result);
+    res.render('index.ejs', {movies: result});
+  });
+})
+
+.get('/movies', function(req,res){
+  collection.aggregate([{$sample: {size: 1}}]).toArray(function(err, result){
+    if(err) return res.status(500).send(err);
+    //res.send(result);
+    res.render('index.ejs', {movies: result});
   });
 })
 
@@ -43,7 +52,8 @@ app.get('/movies', function(req, res){
   var query = {'metascore':{$gte: parseInt(req.query.metascore)}};
   collection.find(query).sort({metascore: -1}).limit(parseInt(req.query.limit)).toArray(function(err,result){
     if(err) return res.sendStatus(500).send(err);
-    res.send(result);
+    //res.send(result);
+    res.render('index.ejs', {movies: result});
   });
 })
 
@@ -51,13 +61,15 @@ app.get('/movies', function(req, res){
   collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
     if(err) return res.sendStatus(500).send(err);
     res.send(result.result);
+    //res.render('index.ejs', {movies: result});
   });
 })
 
 .get('/movies/:id', function(req, res){
   collection.find({'id': req.params.id}).toArray(function(err, result){
     if(err) return res.sendStatus(500).send(err);
-    res.send(result);
+    //res.send(result);
+    res.render('index.ejs', {movies: result});
   });
 })
 
