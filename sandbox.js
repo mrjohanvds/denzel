@@ -2,6 +2,7 @@ const imdb = require('./src/imdb');
 const Express = require("express");
 const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
+const favicon = require("serve-favicon");
 const ObjectId = require("mongodb").ObjectID;
 
 var app = Express();
@@ -22,16 +23,18 @@ MongoClient.connect(uri, {useNewUrlParser: true}, (error, client) => {
     throw error;
   }
   database = client.db(DATABASE_NAME);
-  collection = database.collection(COLLECTION_NAME);
+  collection = database.collection(COLLECTION_NAME);/*
   collection.drop(function(err, delOK){
   if(err) throw err;
   if(delOK) console.log("Collection deleted");
-  });
+  });*/
   console.log("Connected to `" + DATABASE_NAME + "` !");
   sandbox(DENZEL_IMDB_ID, collection, client);
 });
 
-app.get('/movies/all', function(req, res){
+app.use(favicon(__dirname + "/icon.ico"))
+
+.get('/movies/all', function(req, res){
   collection.find().toArray(function(err, result){
     if(err) return res.status(500).send(err);
     //res.send(result);
@@ -81,7 +84,7 @@ app.get('/movies/all', function(req, res){
 
 .use(function(req, res, next){
   res.redirect('/movies/all');
-})
+});
 
 async function sandbox (actor, collection, client) {
   try {
@@ -99,3 +102,40 @@ async function sandbox (actor, collection, client) {
 }
 
 app.listen(9292);
+
+process.on('SIGINT', function(){
+  collection.drop(function(err, delOK){
+    if(err) throw err;
+    if(delOK) {
+      console.log("Collection deleted");
+      process.exit(1);
+    }
+  }); 
+});
+process.on('SIGUSR1', function(){
+  collection.drop(function(err, delOK){
+    if(err) throw err;
+    if(delOK) {
+      console.log("Collection deleted");
+      process.exit(1);
+    }
+  }); 
+});
+process.on('SIGUSR2', function(){
+  collection.drop(function(err, delOK){
+    if(err) throw err;
+    if(delOK) {
+      console.log("Collection deleted");
+      process.exit(1);
+    }
+  }); 
+});
+process.on('uncaughtException', function(){
+  collection.drop(function(err, delOK){
+    if(err) throw err;
+    if(delOK) {
+      console.log("Collection deleted");
+      process.exit(1);
+    }
+  }); 
+});

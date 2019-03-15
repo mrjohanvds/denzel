@@ -3,6 +3,7 @@
 
 <head>
     <title>Denzel's movies</title>
+    <link rel="icon" href="favicon.ico"/>
     <style>
             @import url('https://fonts.googleapis.com/css?family=Amiko');
             *{
@@ -33,7 +34,7 @@
             .movie {
                 background-color: #424558;
                 color: #FFF; 
-                margin: 20px 20px;                
+                margin: 20px 20px;            
             }
 
             .movie > div > div{
@@ -267,12 +268,13 @@
         </ul>
     </nav>
 
-    <div id="main">
+    <div id="main"><% if(movies.length > 1){%>
         <ul class="submenu">
             <% movies.forEach( movie => { %>
                 <li><a href="/movies/<%=movie.id%>"><%=movie.title%></a></li>
             <% }); %>
         </ul>
+        <%}%>
         <ul>
             <% movies.forEach( movie => { %>
                 <li class="movie">
