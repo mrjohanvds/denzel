@@ -39,7 +39,6 @@ app.use(favicon(__dirname + "/icon.ico"))
 .get('/web/movies/all', function(req, res){
   collection.find().toArray(function(err, result){
     if(err) return res.status(500).send(err);
-    //res.send(result);
     res.render('index.ejs', {movies: result});
   });
 })
@@ -47,7 +46,6 @@ app.use(favicon(__dirname + "/icon.ico"))
 .get('/web/movies', function(req,res){
   collection.aggregate([{$match: {metascore: {$gte : 70}}},{$sample: {size: 1}}]).toArray(function(err, result){
     if(err) return res.status(500).send(err);
-    //res.send(result);
     res.render('index.ejs', {movies: result});
   });
 })
@@ -64,7 +62,6 @@ app.use(favicon(__dirname + "/icon.ico"))
   var query = {'metascore':{$gte: parseInt(meta)}};
   collection.find(query).sort({metascore: -1}).limit(parseInt(lim)).toArray(function(err,result){
     if(err) return res.sendStatus(500).send(err);
-    //res.send(result);
     res.render('index.ejs', {movies: result});
   });
 })
@@ -72,14 +69,13 @@ app.use(favicon(__dirname + "/icon.ico"))
 .post('/web/movies/:id', function(req, res){
   collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
     if(err) return res.sendStatus(500).send(err);
-    res.redirect('/movies/'+req.params.id);
+    res.redirect('/web/movies/'+req.params.id);
   });
 })
 
 .get('/web/movies/:id', function(req, res){
   collection.find({'id': req.params.id}).toArray(function(err, result){
     if(err) return res.sendStatus(500).send(err);
-    //res.send(result);
     res.render('index.ejs', {movies: result});
   });
 })

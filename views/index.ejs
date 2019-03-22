@@ -252,10 +252,10 @@
     <h1>The Denzel's filmography</h1>
     <nav>
         <ul>
-            <li id="menu-random"> <a href="/movies">Random</a></li>
-            <li id="menu-film"><a href="/movies/all">Movies</a></li>
+            <li id="menu-random"> <a href="/web/movies">Random</a></li>
+            <li id="menu-film"><a href="/web/movies/all">Movies</a></li>
             <li id="menu-filter"><a>Filter</a>
-                <form action="/movies/search" method="get">
+                <form action="/web/movies/search" method="get">
                     Metascore : <span id="demo-metascore">0</span>
                     <div class="slidecontainer">
                         <input type="range" name="metascore" min="0" max="100" value="0" class="slider" id="myRange-metascore">
@@ -274,7 +274,7 @@
     <div id="main"><% if(movies.length > 1){%>
         <ul class="submenu">
             <% movies.forEach( movie => { %>
-                <li><a href="/movies/<%=movie.id%>"><%=movie.title%></a></li>
+                <li><a href="/web/movies/<%=movie.id%>"><%=movie.title%></a></li>
             <% }); %>
         </ul>
         <%}%>
@@ -299,7 +299,7 @@
                         </div>
                         <br>
                         <div class="review-form">
-                            <form action="/movies/<%=movie.id%>" method="post">
+                            <form action="/web/movies/<%=movie.id%>" method="post">
                                 <div>
                                     <label for="date">Date :</label>
                                     <input type="date" id="date" name="date" required value="2019-01-01"/>
