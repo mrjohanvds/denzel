@@ -34,7 +34,9 @@ MongoClient.connect(uri, {useNewUrlParser: true}, (error, client) => {
 
 app.use(favicon(__dirname + "/icon.ico"))
 
-.get('/movies/all', function(req, res){
+/* #region Web queries */
+
+.get('/web/movies/all', function(req, res){
   collection.find().toArray(function(err, result){
     if(err) return res.status(500).send(err);
     //res.send(result);
@@ -42,15 +44,15 @@ app.use(favicon(__dirname + "/icon.ico"))
   });
 })
 
-.get('/movies', function(req,res){
-  collection.aggregate([{$sample: {size: 1}}]).toArray(function(err, result){
+.get('/web/movies', function(req,res){
+  collection.aggregate([{$match: {metascore: {$gte : 70}}},{$sample: {size: 1}}]).toArray(function(err, result){
     if(err) return res.status(500).send(err);
     //res.send(result);
     res.render('index.ejs', {movies: result});
   });
 })
 
-.get('/movies/search', function(req, res){
+.get('/web/movies/search', function(req, res){
   if(req.query.metascore)
     var meta = req.query.metascore;
   else
@@ -67,6 +69,55 @@ app.use(favicon(__dirname + "/icon.ico"))
   });
 })
 
+.post('/web/movies/:id', function(req, res){
+  collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
+    if(err) return res.sendStatus(500).send(err);
+    res.redirect('/movies/'+req.params.id);
+  });
+})
+
+.get('/web/movies/:id', function(req, res){
+  collection.find({'id': req.params.id}).toArray(function(err, result){
+    if(err) return res.sendStatus(500).send(err);
+    //res.send(result);
+    res.render('index.ejs', {movies: result});
+  });
+})
+
+/* #endregion */
+
+/* #region REST queries */
+
+app.get('/movies/all', function(req, res){
+  collection.find().toArray(function(err, result){
+    if(err) return res.status(500).send(err);
+    res.send(result);
+  });
+})
+
+.get('/movies', function(req,res){
+  collection.aggregate([{$sample: {size: 1}}]).toArray(function(err, result){
+    if(err) return res.status(500).send(err);
+    res.send(result);
+  });
+})
+
+.get('/movies/search', function(req, res){
+  if(req.query.metascore)
+    var meta = req.query.metascore;
+  else
+    var meta = 0;
+  if(req.query.limit)
+    var lim = req.query.limit;
+  else
+    var lim = 5;
+  var query = {'metascore':{$gte: parseInt(meta)}};
+  collection.find(query).sort({metascore: -1}).limit(parseInt(lim)).toArray(function(err,result){
+    if(err) return res.sendStatus(500).send(err);
+    res.send(result);
+  });
+})
+
 .post('/movies/:id', function(req, res){
   collection.updateOne({'id': req.params.id}, {$set:{date : req.body.date, review : req.body.review}}, function(err, result){
     if(err) return res.sendStatus(500).send(err);
@@ -77,13 +128,14 @@ app.use(favicon(__dirname + "/icon.ico"))
 .get('/movies/:id', function(req, res){
   collection.find({'id': req.params.id}).toArray(function(err, result){
     if(err) return res.sendStatus(500).send(err);
-    //res.send(result);
-    res.render('index.ejs', {movies: result});
+    res.send(result);
   });
 })
 
+/* #endregion */
+
 .use(function(req, res, next){
-  res.redirect('/movies/all');
+  res.redirect('/web/movies/all');
 });
 
 async function sandbox (actor, collection, client) {
